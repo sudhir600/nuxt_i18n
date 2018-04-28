@@ -1,22 +1,67 @@
-# lang
+# Changes which required
 
-> no desc
-
-## Build Setup
-
+> in plugin/i18n.js
 ``` bash
-# install dependencies
-$ npm install # Or yarn install
+import Vue from 'vue';
+import VueI18n from 'vue-i18n';
+Vue.use(VueI18n);
 
-# serve with hot reload at localhost:3000
-$ npm run dev
-
-# build for production and launch server
-$ npm run build
-$ npm start
-
-# generate static project
-$ npm run generate
+export default ({ app, store, req }) => {
+	if(process.server) {
+		var a = req.headers;
+		console.log(req.headers)
+		var cookies = req.headers.cookie
+		var KeyNameLocale =  "locale="
+		var decodedCookie = decodeURIComponent(cookies)
+			var ca = decodedCookie.split(';')
+			
+			for(var i = 0; i <ca.length; i++) {
+				var c = ca[i]
+				while (c.charAt(0) == ' ') {
+					c = c.substring(1)
+				}
+				
+				if(c.indexOf(KeyNameLocale) !== -1) {
+					var newLocale = c.substring(KeyNameLocale.length, c.length)
+					console.log('newLocale')
+					console.log(newLocale)
+					store.commit('SET_LANG', newLocale)
+				}
+			}
+	}
+	
+  app.i18n = new VueI18n({
+    locale: store.state.locale,
+    fallbackLocale: 'en',
+    messages: {
+      'en': require('~/locales/en.json'),
+      'fr': require('~/locales/fr.json')
+    }
+  });
+  app.i18n.path = (link) => {
+    if (app.i18n.locale === app.i18n.fallbackLocale) {
+      return `/${link}`;
+    }
+    return `/${app.i18n.locale}/${link}`;
+  } 
+}
+```
+In middleware/i18n.js
+``` bash
+export default function ({ isHMR, app, store, route, params, error, redirect }) {
+  // nothing here
+}
 ```
 
-For detailed explanation on how things work, checkout the [Nuxt.js docs](https://github.com/nuxt/nuxt.js).
+in store/index.js
+``` bash
+export const state = () => ({
+  locales: ['en', 'fr'],
+  locale: 'en'
+})
+export const mutations = {
+  SET_LANG(state, locale) {
+      state.locale = locale
+  }
+}
+```
