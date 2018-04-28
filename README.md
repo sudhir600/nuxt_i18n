@@ -1,6 +1,6 @@
 # Changes which required
 
-> in plugin/i18n.js
+in plugin/i18n.js
 ``` bash
 import Vue from 'vue';
 import VueI18n from 'vue-i18n';
