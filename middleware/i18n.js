@@ -4,7 +4,7 @@
  */
 export default function ({ isHMR, app, store, route, params, error, redirect }) {
 	console.log('middlware')
-	store.commit('SET_LANG', 'fr')
+	//store.commit('SET_LANG', 'fr')
  /* 
  if (isHMR) { 
     return;
